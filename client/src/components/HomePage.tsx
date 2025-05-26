@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { fetchApi } from '../services/api';
 
 interface HomeData {
   message: string;
+  data?: any; 
 }
 
 export function HomePage() {
@@ -11,10 +11,21 @@ export function HomePage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchHomeData = async () => {
+    const fetchContactData = async () => {
       try {
-        const response:any = await fetchApi<HomeData>('');
-        setHomeData(response);
+        const response = await fetch('https://michcvdev.com/api_sistemas/api/v1', {
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error(`Error HTTP! estado: ${response.status}`);
+        }
+
+        const data = await response.json();
+        setHomeData(data);
       } catch (err) {
         setError((err as Error).message);
       } finally {
@@ -22,15 +33,16 @@ export function HomePage() {
       }
     };
 
-    fetchHomeData();
+    fetchContactData();
   }, []);
 
   if (loading) return <div>Cargando...</div>;
   if (error) return <div>Error: {error}</div>;
+  if (!homeData) return <div>No se recibieron datos</div>;
 
   return (
     <div>
-      <h2>{homeData?.message}</h2>
+      <h2>{homeData.message}</h2>
     </div>
   );
 }

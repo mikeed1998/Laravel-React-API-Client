@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { fetchApi } from '../services/api';
 
 interface ContactData {
   message: string;
+  data?: any; 
 }
 
 export function ContactPage() {
@@ -13,8 +13,19 @@ export function ContactPage() {
   useEffect(() => {
     const fetchContactData = async () => {
       try {
-        const response:any = await fetchApi<ContactData>('/contact');
-        setContactData(response);
+        const response = await fetch('https://michcvdev.com/api_sistemas/api/v1/contact', {
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error(`Error HTTP! estado: ${response.status}`);
+        }
+
+        const data = await response.json();
+        setContactData(data);
       } catch (err) {
         setError((err as Error).message);
       } finally {
@@ -27,10 +38,11 @@ export function ContactPage() {
 
   if (loading) return <div>Cargando...</div>;
   if (error) return <div>Error: {error}</div>;
+  if (!contactData) return <div>No se recibieron datos</div>;
 
   return (
     <div>
-      <h2>{contactData?.message}</h2>
+      <h2>{contactData.message}</h2>
     </div>
   );
 }

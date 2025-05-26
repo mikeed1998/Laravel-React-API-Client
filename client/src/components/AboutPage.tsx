@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { fetchApi } from '../services/api';
+// import { fetchApi } from '../services/api';
 
 interface AboutData {
   message: string;
@@ -12,9 +12,20 @@ export function AboutPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchAboutData = async () => {
       try {
-        const data:any = await fetchApi<AboutData>('/about');
+        const response = await fetch('https://michcvdev.com/api_sistemas/api/v1/about', {
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error(`Error HTTP! estado: ${response.status}`);
+        }
+
+        const data = await response.json();
         setApiData(data);
       } catch (err) {
         setError((err as Error).message);
@@ -23,7 +34,7 @@ export function AboutPage() {
       }
     };
 
-    fetchData();
+    fetchAboutData();
   }, []);
 
   if (loading) return <div>Cargando...</div>;

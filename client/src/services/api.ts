@@ -1,4 +1,7 @@
-const API_BASE_URL = 'https://michcvdev.com/api_sistemas/api/v1';
+const isDevelopment = import.meta.env.DEV;
+const API_BASE_URL = isDevelopment
+  ? 'http://localhost:8000/api/v1'  // Desarrollo
+  : 'https://michcvdev.com/api_sistemas/api/v1'; // Producción
 
 interface ApiResponse<T = any> {
   message: string;
@@ -10,7 +13,10 @@ export async function fetchApi<T>(
   options?: RequestInit
 ): Promise<ApiResponse<T>> {
   try {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    const url = `${API_BASE_URL}${endpoint}`;
+    console.log('Fetching URL:', url); // Para depuración
+
+    const response = await fetch(url, {
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
