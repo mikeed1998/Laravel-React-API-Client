@@ -1,4 +1,3 @@
-// App.tsx
 import { Routes, Route } from 'react-router-dom';
 import { Navbar } from './components/NavBar';
 import { AboutPage, ContactPage, HomePage } from './components';

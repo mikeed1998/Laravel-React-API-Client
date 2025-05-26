@@ -1,26 +1,20 @@
 import { useState, useEffect } from 'react';
+import { fetchApi } from '../services/api';
 
 interface ContactData {
   message: string;
-  data: string[];
 }
 
 export function ContactPage() {
-  const [data, setData] = useState<ContactData | null>(null);
+  const [contactData, setContactData] = useState<ContactData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchContactData = async () => {
       try {
-        const response = await fetch('http://localhost:8000/api/v1/contact');
-        
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const result = await response.json();
-        setData(result);
+        const response:any = await fetchApi<ContactData>('/contact');
+        setContactData(response);
       } catch (err) {
         setError((err as Error).message);
       } finally {
@@ -28,7 +22,7 @@ export function ContactPage() {
       }
     };
 
-    fetchData();
+    fetchContactData();
   }, []);
 
   if (loading) return <div>Cargando...</div>;
@@ -36,7 +30,7 @@ export function ContactPage() {
 
   return (
     <div>
-      <h2>{data?.message}</h2>
+      <h2>{contactData?.message}</h2>
     </div>
   );
 }

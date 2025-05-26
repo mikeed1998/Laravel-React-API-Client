@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { fetchApi } from '../services/api';
 
 interface AboutData {
   message: string;
@@ -6,21 +7,15 @@ interface AboutData {
 }
 
 export function AboutPage() {
-  const [data, setData] = useState<AboutData | null>(null);
+  const [apiData, setApiData] = useState<AboutData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('http://localhost:8000/api/v1/about');
-        
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const result = await response.json();
-        setData(result);
+        const data:any = await fetchApi<AboutData>('/about');
+        setApiData(data);
       } catch (err) {
         setError((err as Error).message);
       } finally {
@@ -33,16 +28,15 @@ export function AboutPage() {
 
   if (loading) return <div>Cargando...</div>;
   if (error) return <div>Error: {error}</div>;
+  if (!apiData) return <div>No hay datos</div>;
 
   return (
     <div>
-      <h2>{data?.message}</h2>
+      <h2>{apiData.message}</h2>
       <ul>
-        {
-            data?.data.map((e, i) => (
-                <li key={i}>{e}</li>
-            ))
-        }
+        {apiData.data.map((item, index) => (
+          <li key={index}>{item}</li>
+        ))}
       </ul>
     </div>
   );

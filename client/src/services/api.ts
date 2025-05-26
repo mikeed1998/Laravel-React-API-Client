@@ -1,10 +1,8 @@
-// src/services/api.ts
-const API_URL = import.meta.env.VITE_API_URL || '/api';
+const API_BASE_URL = 'https://michcvdev.com/api_sistemas/api/v1';
 
 interface ApiResponse<T = any> {
-  status: string;
-  data?: T;
-  message?: string;
+  message: string;
+  data: T;
 }
 
 export async function fetchApi<T>(
@@ -12,7 +10,7 @@ export async function fetchApi<T>(
   options?: RequestInit
 ): Promise<ApiResponse<T>> {
   try {
-    const response = await fetch(`${API_URL}${endpoint}`, {
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
@@ -27,9 +25,6 @@ export async function fetchApi<T>(
     return await response.json();
   } catch (error) {
     console.error('API Error:', error);
-    return {
-      status: 'error',
-      message: (error as Error).message,
-    };
+    throw error;
   }
 }
